@@ -1,0 +1,135 @@
+'use client';
+import { useRef, useState, useCallback } from 'react';
+import Link from 'next/link';
+import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import { Media } from '@/types/tmdb';
+import { MediaCard } from './MediaCard';
+import { motion } from 'motion/react';
+
+interface HorizontalRowProps {
+  title: string;
+  items: Media[];
+  seeAllHref?: string;
+  variant?: 'default' | 'numbered';
+}
+
+export function HorizontalRow({ title, items, seeAllHref, variant = 'default' }: HorizontalRowProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const checkScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 10);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 10);
+  }, []);
+
+  const scroll = (dir: 'left' | 'right') => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir === 'right' ? el.clientWidth * 0.75 : -(el.clientWidth * 0.75), behavior: 'smooth' });
+    setTimeout(checkScroll, 400);
+  };
+
+
+  if (!items || items.length === 0) return null;
+
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-100px' }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className="relative group/row"
+    >
+      {/* Header */}
+      <div className="w-full max-w-[1800px] mx-auto px-4 md:px-14 mb-3 flex items-center justify-between">
+        <h2 className="text-lg md:text-xl font-display font-bold text-white tracking-tight">
+          {title}
+        </h2>
+        {seeAllHref && (
+          <Link
+            href={seeAllHref}
+            className="flex items-center gap-1 text-sm font-semibold text-white/35 hover:text-white/80 transition-colors duration-200 group"
+          >
+            View All
+            <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform duration-200" />
+          </Link>
+        )}
+      </div>
+
+      {/* Scroll buttons */}
+      <button
+        onClick={() => scroll('left')}
+        aria-label="Scroll left"
+        className={`absolute left-4 md:left-14 top-[55%] -translate-y-1/2 z-30 w-10 h-10
+          flex items-center justify-center rounded-full transition-[opacity,transform] duration-200
+          ${canScrollLeft ? 'opacity-0 group-hover/row:opacity-100 hover:scale-110 active:scale-95' : 'opacity-0 pointer-events-none'}`}
+        style={{ background: 'rgba(6,6,6,0.9)', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 4px 20px rgba(0,0,0,0.6)' }}
+      >
+        <ChevronLeft size={20} className="text-white" />
+      </button>
+      <button
+        onClick={() => scroll('right')}
+        aria-label="Scroll right"
+        className={`absolute right-4 md:right-14 top-[55%] -translate-y-1/2 z-30 w-10 h-10
+          flex items-center justify-center rounded-full transition-[opacity,transform] duration-200
+          ${canScrollRight ? 'opacity-0 group-hover/row:opacity-100 hover:scale-110 active:scale-95' : 'opacity-0 pointer-events-none'}`}
+        style={{ background: 'rgba(6,6,6,0.9)', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 4px 20px rgba(0,0,0,0.6)' }}
+      >
+        <ChevronRight size={20} className="text-white" />
+      </button>
+
+      {/* Edge fades */}
+      <div className="absolute left-0 top-0 bottom-0 w-[4%] z-20 pointer-events-none transition-opacity duration-300"
+        style={{ background: 'linear-gradient(to right, #05010a, transparent)', opacity: canScrollLeft ? 1 : 0 }} />
+      <div className="absolute right-0 top-0 bottom-0 w-[4%] z-20 pointer-events-none transition-opacity duration-300"
+        style={{ background: 'linear-gradient(to left, #05010a, transparent)', opacity: canScrollRight ? 1 : 0 }} />
+
+      {/*
+        ── Scroll track ───────────────────────────────────────────────────────────
+        With Lenis restored, it natively listens at the window level and intercepts
+        vertical wheel events before the browser can swallow them. We no longer
+        need any custom JavaScript wheel handlers here.
+      */}
+      <div
+        ref={scrollRef}
+        onScroll={checkScroll}
+        className="flex gap-4 overflow-x-auto overflow-y-hidden no-scrollbar"
+        style={{
+          paddingLeft: 'max(1rem, calc((100vw - 1800px) / 2 + 3.5rem))',
+          paddingRight: 'max(1rem, calc((100vw - 1800px) / 2 + 3.5rem))',
+          paddingTop: '8px',
+          paddingBottom: '24px',
+          overscrollBehavior: 'contain',
+          touchAction: 'pan-x',
+        }}
+      >
+        {items.map((item, idx) => (
+          <div
+            key={`${item.id}-${idx}`}
+            className="relative flex-shrink-0"
+            style={{ width: 'clamp(140px, 15vw, 190px)' }}
+          >
+            {variant === 'numbered' && (
+              <span
+                className="absolute -left-3 bottom-[52px] z-10 font-display font-black leading-none select-none pointer-events-none"
+                style={{
+                  fontSize: 'clamp(3rem, 8vw, 5rem)',
+                  color: 'transparent',
+                  WebkitTextStroke: '2px rgba(255,255,255,0.25)',
+                  lineHeight: 1,
+                }}
+              >
+                {idx + 1}
+              </span>
+            )}
+            <MediaCard media={item} />
+          </div>
+        ))}
+        <div className="flex-shrink-0 w-4 md:w-8" aria-hidden="true" />
+      </div>
+    </motion.section>
+  );
+}

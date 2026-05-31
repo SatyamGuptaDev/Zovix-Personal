@@ -1,0 +1,264 @@
+@import "tailwindcss";
+
+@theme {
+  --color-void-50: #f5f5f5;
+  --color-void-100: #e5e5e5;
+  --color-void-200: #d4d4d4;
+  --color-void-300: #a3a3a3;
+  --color-void-400: #737373;
+  --color-void-500: #525252;
+  --color-void-600: #404040;
+  --color-void-700: #262626;
+  --color-void-800: #171717;
+  --color-void-900: #0a0a0a;
+  --color-void-950: #050505;
+
+  --color-crimson-400: #ef4444;
+  --color-crimson-500: #e50914;
+  --color-crimson-600: #dc2626;
+
+  --color-crimson-900: #450a0a;
+
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --font-body: "Inter", sans-serif;
+}
+
+/* ============================================================
+   VOID NOIR — 2026 Design System
+   ============================================================ */
+
+/* ---------- Keyframe Animations ---------- */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 8px 0 rgba(229, 9, 20, 0.3); }
+  50% { box-shadow: 0 0 24px 4px rgba(229, 9, 20, 0.6); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ken-burns {
+  0% { transform: scale(1.0); }
+  100% { transform: scale(1.08); }
+}
+
+@keyframes grain {
+  0%  { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(-1.5%, -1.5%, 0); }
+  100%{ transform: translate3d(0, 0, 0); }
+}
+
+
+@keyframes indicator-expand {
+  from { width: 8px; }
+  to { width: 32px; }
+}
+
+@keyframes purple-beam {
+  0% {
+    transform: translate(-10%, -15%) rotate(-8deg) scale(1);
+    opacity: 0.55;
+  }
+  33% {
+    transform: translate(5%, -10%) rotate(-3deg) scale(1.05);
+    opacity: 0.45;
+  }
+  66% {
+    transform: translate(8%, -20%) rotate(5deg) scale(0.95);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(-10%, -15%) rotate(-8deg) scale(1);
+    opacity: 0.55;
+  }
+}
+
+/* ---------- Scrollbar Utilities ---------- */
+@utility no-scrollbar {
+  &::-webkit-scrollbar { display: none; }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@utility custom-scrollbar {
+  &::-webkit-scrollbar { width: 6px; height: 6px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+  &::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+}
+
+/* Global Premium Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-void-950);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  border: 2px solid var(--color-void-950);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) var(--color-void-950);
+}
+
+/* ---------- Glass Panel Utility ---------- */
+@utility glass-panel {
+  background: rgba(10, 10, 10, 0.65);
+  backdrop-filter: blur(20px) saturate(1.8);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  box-shadow:
+    rgba(255, 255, 255, 0.08) 0px 0px 0px 0.5px inset,
+    rgba(0, 0, 0, 0.4) 0px 8px 32px,
+    rgba(0, 0, 0, 0.2) 0px 2px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+@utility glass-panel-light {
+  background: rgba(15, 15, 15, 0.5);
+  backdrop-filter: blur(12px) saturate(1.4);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  box-shadow: rgba(255, 255, 255, 0.06) 0px 0px 0px 0.5px inset;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ---------- Crimson Glow Utilities ---------- */
+@utility glow-crimson {
+  box-shadow: 0 0 20px rgba(229, 9, 20, 0.4), 0 0 40px rgba(229, 9, 20, 0.15);
+}
+
+@utility glow-crimson-sm {
+  box-shadow: 0 0 10px rgba(229, 9, 20, 0.3);
+}
+
+@utility text-glow-crimson {
+  text-shadow: 0 0 20px rgba(229, 9, 20, 0.5);
+}
+
+/* ---------- Shimmer Skeleton Utility ---------- */
+@utility shimmer-skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(38, 38, 38, 0.8) 25%,
+    rgba(64, 64, 64, 0.5) 50%,
+    rgba(38, 38, 38, 0.8) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite linear;
+}
+
+/* ---------- Grain Overlay ---------- */
+@utility grain-overlay {
+  &::before {
+    content: '';
+    position: fixed;
+    inset: -50%;
+    width: 200%;
+    height: 200%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 128px 128px;
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 9999;
+    animation: grain 8s steps(10) infinite;
+  }
+}
+
+/* ---------- Animated Float ---------- */
+@utility animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ---------- Slide Up Animation ---------- */
+@utility animate-slide-up {
+  animation: slide-up 0.4s ease-out forwards;
+}
+
+/* ---------- Ken Burns ---------- */
+@utility animate-ken-burns {
+  animation: ken-burns 12s ease-in-out alternate infinite;
+}
+
+/* ---------- Crimson Pulse ---------- */
+@utility animate-pulse-glow {
+  animation: pulse-glow 2.5s ease-in-out infinite;
+}
+
+/* ============================================================
+   Global Resets & Base Styles
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* No scroll-behavior:smooth on html — if set, window.scrollBy() in carousel
+     wheel handlers would inherit it, creating a new smooth animation per tick
+     (double-smooth jank). Programmatic scrolls specify behavior explicitly. */
+  overscroll-behavior: none;
+  scroll-padding-top: 72px;
+
+  /* Hide page scrollbar — keep content scrollable, just hide the bar visually.
+     scrollbar-gutter:stable reserves the space so layout doesn't shift. */
+  scrollbar-gutter: stable;
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE / Edge legacy */
+}
+html::-webkit-scrollbar {
+  display: none;                /* Chrome / Safari / Opera */
+}
+
+body {
+  background-color: var(--color-void-950);
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+
+/* Selection color */
+::selection {
+  background: rgba(229, 9, 20, 0.3);
+  color: #fff;
+}
+
+/* Smooth image rendering */
+img {
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* Hide scrollbars for specific elements */
+.no-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE / Edge legacy */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome / Safari / Opera */
+}
