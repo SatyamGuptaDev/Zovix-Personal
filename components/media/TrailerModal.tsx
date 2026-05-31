@@ -90,7 +90,7 @@ export function TrailerModal({ isOpen, onClose, videoKey }: { isOpen: boolean, o
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ type: "spring", damping: 25, stiffness: 220 }}
-            className="relative bg-black w-full max-w-5xl aspect-video sm:rounded-2xl overflow-hidden shadow-2xl sm:border border-zinc-800 z-10 flex items-center justify-center"
+            className="relative bg-black w-full max-w-3xl md:max-w-4xl max-h-[80vh] aspect-video sm:rounded-2xl overflow-hidden shadow-2xl sm:border border-zinc-800 z-10 flex items-center justify-center"
           >
             {/* Close button (Floating Top-Right) */}
             <button 

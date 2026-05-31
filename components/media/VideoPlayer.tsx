@@ -305,7 +305,7 @@ export function VideoPlayer({ type, id, season, episode, title, poster, onProgre
       </div>
 
       {/* Video Container */}
-      <div className={`relative w-full flex-1 bg-black rounded-xl overflow-hidden border border-zinc-800 shadow-2xl group ${!isTheaterMode ? 'aspect-video' : ''}`}>
+      <div className="relative w-full flex-1 bg-black rounded-xl overflow-hidden border border-zinc-800 shadow-2xl group">
         {testingSources ? (
           <div className="absolute inset-0 z-40 bg-void-950 flex flex-col items-center justify-center p-4 text-center overflow-auto custom-scrollbar">
             <div className="w-10 h-10 sm:w-16 sm:h-16 border-4 border-zinc-800 border-t-crimson-500 rounded-full animate-spin mb-4 sm:mb-6" />

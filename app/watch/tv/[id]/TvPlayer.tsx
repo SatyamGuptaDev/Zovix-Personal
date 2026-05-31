@@ -129,14 +129,14 @@ function TvPlayerContent({ show }: { show: MediaDetails }) {
       </button>
       <div className={`flex gap-8 transition-all duration-500 ${isPlaying ? 'flex-col items-center justify-center' : 'flex-col xl:flex-row'}`}>
         <div className={`flex flex-col gap-6 w-full ${isPlaying ? 'xl:w-full' : 'flex-1'}`}>
-          <div className="relative w-full h-full">
+          <div className="relative w-full">
             {/* Ambient Backlight */}
             <div 
               className="absolute inset-[-5%] blur-[80px] opacity-100 transition-colors duration-1000 ease-in-out pointer-events-none" 
               style={{ backgroundColor: bgColor }} 
             />
             
-            <div className="relative w-full rounded-2xl overflow-hidden border border-zinc-800 bg-void-950 group aspect-video">
+            <div className="relative w-full rounded-2xl overflow-hidden border border-zinc-800 bg-void-950 group aspect-video md:aspect-[2.39/1] max-h-[450px]">
             {!isPlaying ? (
               <div className="absolute inset-0 z-10">
                 <YoutubeBackgroundPlayer 
