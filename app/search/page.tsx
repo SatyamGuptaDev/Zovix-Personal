@@ -95,11 +95,11 @@ function SearchPageContent() {
         </h1>
 
         {/* Search Mode Pills */}
-        <div className="flex items-center p-1.5 bg-white/5 backdrop-blur-md rounded-full border border-white/10 mb-10 shadow-lg">
-          <button className="flex items-center gap-2 bg-white/15 px-6 py-2.5 rounded-full text-sm font-semibold text-white transition-all shadow-sm">
+        <div className="flex items-center p-1.5 bg-white/10 backdrop-blur-md rounded-full border border-white/15 mb-10 shadow-lg">
+          <button className="flex items-center gap-2 bg-crimson-500 hover:bg-crimson-600 px-6 py-2.5 rounded-full text-sm font-semibold text-white transition-all shadow-md shadow-crimson-500/25">
             <Search size={16} /> Title Search
           </button>
-          <button className="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-medium text-white/50 hover:text-white hover:bg-white/5 transition-all">
+          <button className="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-medium text-white/50 hover:text-white/90 hover:bg-white/5 transition-all">
             <Sparkles size={16} /> AI Search
           </button>
         </div>
@@ -107,7 +107,7 @@ function SearchPageContent() {
         {/* Search Input Container */}
         <div className="relative w-full max-w-2xl transition-all duration-300">
           <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
-            <Search size={22} className="text-white/40" />
+            <Search size={22} className="text-white/50" />
           </div>
           
           <input
@@ -117,12 +117,12 @@ function SearchPageContent() {
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             placeholder="Search for movies & TV shows..."
-            className="w-full py-4 md:py-5 pl-16 pr-16 text-base md:text-xl font-medium text-white placeholder:text-white/30 outline-none rounded-full"
+            className="w-full py-4 md:py-5 pl-16 pr-16 text-base md:text-xl font-medium text-white placeholder-white/45 outline-none rounded-full"
             style={{
-              background: 'rgba(255, 255, 255, 0.03)',
+              background: focused ? 'rgba(255, 255, 255, 0.09)' : 'rgba(255, 255, 255, 0.07)',
               backdropFilter: 'blur(30px)',
-              border: focused ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.08)',
-              boxShadow: focused ? '0 0 50px rgba(150, 50, 255, 0.15)' : '0 20px 40px rgba(0,0,0,0.3)',
+              border: focused ? '1px solid rgba(229, 9, 20, 0.45)' : '1px solid rgba(255, 255, 255, 0.15)',
+              boxShadow: focused ? '0 0 40px rgba(229, 9, 20, 0.25)' : '0 20px 40px rgba(0,0,0,0.4)',
               transition: 'all 0.3s ease',
             }}
           />
@@ -192,20 +192,20 @@ function SearchPageContent() {
       {/* History Area */}
       {!query && history.length > 0 && (
         <div className="max-w-3xl mx-auto w-full mt-12 px-8 relative z-10">
-          <h3 className="flex items-center gap-2 text-xs font-bold text-white/40 uppercase tracking-widest mb-6">
-            <History size={14} /> Recent Searches
+          <h3 className="flex items-center gap-2 text-xs font-bold text-crimson-500 uppercase tracking-widest mb-6">
+            <History size={14} className="text-crimson-500" /> Recent Searches
           </h3>
           <div className="flex flex-wrap gap-3">
             {history.map(item => (
               <div
                 key={item}
                 onClick={() => setQuery(item)}
-                className="group flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/5 px-5 py-2.5 rounded-full cursor-pointer transition-all"
+                className="group flex items-center gap-3 bg-white/8 hover:bg-white/12 border border-white/10 px-5 py-2.5 rounded-full cursor-pointer transition-all"
               >
-                <span className="text-sm font-medium text-white/60 group-hover:text-white">{item}</span>
+                <span className="text-sm font-medium text-white/85 group-hover:text-white">{item}</span>
                 <button
                   onClick={(e) => removeFromHistory(item, e)}
-                  className="text-white/20 hover:text-white/80 p-0.5 rounded-full transition-colors"
+                  className="text-white/30 hover:text-crimson-500 p-0.5 rounded-full transition-colors"
                 >
                   <X size={14} />
                 </button>

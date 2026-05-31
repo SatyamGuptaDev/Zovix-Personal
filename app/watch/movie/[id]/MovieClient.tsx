@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MediaDetails } from '@/types/tmdb';
 import { VideoPlayer } from '@/components/media/VideoPlayer';
 import { TrailerModal } from '@/components/media/TrailerModal';
@@ -18,6 +18,47 @@ export function MovieClient({ movie }: { movie: MediaDetails }) {
   const router = useRouter();
   const [isPlaying, setIsPlaying] = useState(false);
   const [trailerOpen, setTrailerOpen] = useState(false);
+  const trailer = movie.videos?.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube');
+  const [isTrailerPlayable, setIsTrailerPlayable] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!trailer?.key) {
+      setIsTrailerPlayable(false);
+      return;
+    }
+    
+    let isMounted = true;
+    const checkAvailability = async () => {
+      try {
+        // 1. Try our hacker server-side playability check first
+        const apiRes = await fetch(`/api/check-video?id=${trailer.key}`);
+        if (apiRes.ok) {
+          const data = await apiRes.json();
+          if (isMounted) {
+            setIsTrailerPlayable(data.playable);
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn('Hacker background check failed, falling back to oEmbed:', e);
+      }
+
+      // 2. Failsafe fallback: oEmbed check
+      try {
+        const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${trailer.key}`);
+        if (isMounted) {
+          setIsTrailerPlayable(res.status === 200);
+        }
+      } catch (e) {
+        if (isMounted) {
+          setIsTrailerPlayable(false);
+        }
+      }
+    };
+    
+    checkAvailability();
+    return () => { isMounted = false; };
+  }, [trailer?.key]);
 
   const { isInWatchlist, toggleWatchlist } = useWatchlist();
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -31,7 +72,6 @@ export function MovieClient({ movie }: { movie: MediaDetails }) {
   const isWatched = progress >= 95;
   const continueWatching = progress > 0 && !isWatched;
 
-  const trailer = movie.videos?.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube');
   const runtime = movie.runtime ? `${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}m` : '';
 
   const bgColor = useAmbientColor(getImageUrl(movie.poster_path || movie.backdrop_path, 'w500'));
@@ -57,7 +97,7 @@ export function MovieClient({ movie }: { movie: MediaDetails }) {
             <div className={`relative w-full rounded-2xl overflow-hidden border border-zinc-800 bg-void-950 group ${!isPlaying ? 'aspect-video md:aspect-[21/9]' : ''}`}>
             {!isPlaying ? (
               <div className="absolute inset-0 z-10">
-                {trailer ? (
+                {trailer && isTrailerPlayable === true ? (
                   <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none opacity-60 bg-black flex items-center justify-center">
                     <iframe
                       src={`https://www.youtube-nocookie.com/embed/${trailer.key}?autoplay=1&mute=1&controls=0&disablekb=1&loop=1&playlist=${trailer.key}&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3`}
@@ -67,7 +107,7 @@ export function MovieClient({ movie }: { movie: MediaDetails }) {
                     />
                   </div>
                 ) : (
-                  <Image src={getImageUrl(movie.backdrop_path || movie.poster_path, 'original')} alt={movie.title || ''} fill className="object-cover opacity-60" priority />
+                  <Image src={getImageUrl(movie.backdrop_path || movie.poster_path, 'original')} alt={movie.title || ''} fill sizes="100vw" className="object-cover opacity-60" priority />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-void-950 via-void-950/20 to-transparent pointer-events-none" />
               </div>
@@ -104,7 +144,7 @@ export function MovieClient({ movie }: { movie: MediaDetails }) {
                     onClick={() => setIsPlaying(true)}
                     className={`w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl transition-all font-bold uppercase tracking-wider text-sm shadow-xl active:scale-95 ${
                       continueWatching 
-                        ? 'bg-cyan-400 hover:bg-cyan-500 text-white shadow-cyan-400/20' 
+                        ? 'bg-crimson-500 hover:bg-crimson-600 text-white shadow-crimson-500/20' 
                         : 'bg-white hover:bg-gray-200 text-black shadow-white/10'
                     }`}
                   >
@@ -115,7 +155,7 @@ export function MovieClient({ movie }: { movie: MediaDetails }) {
                 <div className="grid grid-cols-2 gap-2 mt-1">
                   {trailer && (
                     <button
-                      onClick={() => setTrailerOpen(true)}
+                       onClick={() => setTrailerOpen(true)}
                       className="col-span-2 flex items-center justify-center gap-2 bg-void-900 hover:bg-void-800 border border-zinc-800 text-white px-4 py-2.5 rounded-xl transition-all active:scale-95 font-bold uppercase tracking-wider text-xs"
                     >
                       <Video size={16} /> Watch Trailer
@@ -123,9 +163,9 @@ export function MovieClient({ movie }: { movie: MediaDetails }) {
                   )}
                   <button
                     onClick={() => toggleWatchlist({ id: idStr, type: 'movie', title: movie.title || '', poster: movie.poster_path })}
-                    className={`flex items-center justify-center gap-1.5 border px-3 py-2.5 rounded-xl transition-all active:scale-95 font-bold uppercase tracking-wider text-[10px] ${onWatchlist ? 'bg-cyan-400/10 border-cyan-400/20 text-cyan-400' : 'bg-void-900 border-zinc-800 hover:bg-void-800 text-zinc-300'}`}
+                    className={`flex items-center justify-center gap-1.5 border px-3 py-2.5 rounded-xl transition-all active:scale-95 font-bold uppercase tracking-wider text-[10px] ${onWatchlist ? 'bg-crimson-500/10 border-crimson-500/20 text-crimson-500' : 'bg-void-900 border-zinc-800 hover:bg-void-800 text-zinc-300'}`}
                   >
-                    <Bookmark size={14} className={onWatchlist ? 'fill-cyan-400' : ''} /> {onWatchlist ? 'Watchlisted' : 'Watchlist'}
+                    <Bookmark size={14} className={onWatchlist ? 'fill-crimson-500' : ''} /> {onWatchlist ? 'Watchlisted' : 'Watchlist'}
                   </button>
                   <button
                     onClick={() => toggleFavorite({ id: idStr, type: 'movie', title: movie.title || '', poster: movie.poster_path })}

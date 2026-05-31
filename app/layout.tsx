@@ -35,8 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 transform: 'translateX(-50%)',
                 width: '80%',
                 height: '70%',
-                background: 'radial-gradient(ellipse at center, rgba(76,20,200,0.22) 0%, rgba(50,10,130,0.12) 45%, transparent 80%)',
-                filter: 'blur(80px)',
+                background: 'radial-gradient(ellipse at center, rgba(76,20,200,0.18) 0%, rgba(50,10,130,0.08) 35%, rgba(50,10,130,0.02) 60%, transparent 80%)',
                 animation: 'purple-beam 16s ease-in-out infinite',
                 willChange: 'transform, opacity',
               }}
@@ -49,8 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 left: '-5%',
                 width: '40%',
                 height: '45%',
-                background: 'radial-gradient(ellipse at center, rgba(30,60,180,0.1) 0%, transparent 70%)',
-                filter: 'blur(60px)',
+                background: 'radial-gradient(ellipse at center, rgba(30,60,180,0.08) 0%, rgba(30,60,180,0.02) 40%, transparent 70%)',
                 animation: 'purple-beam 22s ease-in-out infinite reverse',
                 willChange: 'transform, opacity',
               }}
@@ -63,8 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 right: '-5%',
                 width: '35%',
                 height: '40%',
-                background: 'radial-gradient(ellipse at center, rgba(100,30,200,0.1) 0%, transparent 70%)',
-                filter: 'blur(50px)',
+                background: 'radial-gradient(ellipse at center, rgba(100,30,200,0.08) 0%, rgba(100,30,200,0.02) 40%, transparent 70%)',
                 animation: 'purple-beam 19s ease-in-out infinite',
                 willChange: 'transform, opacity',
               }}
@@ -77,8 +74,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 left: '30%',
                 width: '40%',
                 height: '30%',
-                background: 'radial-gradient(ellipse at center, rgba(80,20,160,0.08) 0%, transparent 70%)',
-                filter: 'blur(60px)',
+                background: 'radial-gradient(ellipse at center, rgba(80,20,160,0.06) 0%, rgba(80,20,160,0.01) 45%, transparent 70%)',
               }}
             />
           </div>

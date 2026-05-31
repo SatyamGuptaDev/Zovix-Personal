@@ -54,7 +54,7 @@ export function MediaCard({
           - will-change: transform promotes to a GPU layer ahead of time
         */}
         <div
-          className="relative aspect-[2/3] rounded-xl overflow-hidden cursor-pointer"
+          className="relative aspect-[2/3] rounded-xl overflow-hidden cursor-pointer will-change-transform"
           style={{ background: '#111111' }}
         >
           {/* Poster — scale on hover only (transform = compositor-only, no repaint) */}
@@ -62,6 +62,7 @@ export function MediaCard({
             src={getImageUrl(media.poster_path, "w500")}
             alt={title || "Poster"}
             fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, (max-width: 1280px) 20vw, 15vw"
             className={cn(
               "object-cover transition-transform duration-300 ease-out",
               variant === 'top10'

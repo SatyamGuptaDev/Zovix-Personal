@@ -85,6 +85,7 @@ export function HeroSlider({ items }: { items: Media[] }) {
             src={getImageUrl(current.backdrop_path, 'original')}
             alt={title}
             fill
+            sizes="100vw"
             className="object-cover object-top"
             style={{ animation: 'ken-burns 16s ease-in-out alternate forwards', willChange: 'transform' }}
             priority
@@ -170,6 +171,7 @@ export function HeroSlider({ items }: { items: Media[] }) {
                   src={getImageUrl(current.logo_path, 'original')}
                   alt={title}
                   fill
+                  sizes="(max-width: 640px) 75vw, 480px"
                   className="object-contain object-left-bottom"
                 />
               </div>

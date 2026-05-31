@@ -14,11 +14,11 @@ export function MediaGrid({ title, items, onRemove }: { title?: string; items: M
           <ChevronRight className="w-5 h-5 text-zinc-500" />
         </h3>
       )}
-      <motion.div layout className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
+      <motion.div layout="position" className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
         <AnimatePresence mode="popLayout">
           {items.map((item, index) => (
             <motion.div
-              layout
+              layout="position"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
