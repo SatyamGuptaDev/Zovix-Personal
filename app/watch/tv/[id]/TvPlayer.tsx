@@ -136,7 +136,7 @@ function TvPlayerContent({ show }: { show: MediaDetails }) {
               style={{ backgroundColor: bgColor }} 
             />
             
-            <div className="relative w-full rounded-2xl overflow-hidden border border-zinc-800 bg-void-950 group aspect-video md:aspect-[2.39/1] max-h-[450px]">
+            <div className="relative w-full rounded-2xl overflow-hidden border border-zinc-800 bg-void-950 group aspect-video md:aspect-[2.39/1] max-h-[520px]">
             {!isPlaying ? (
               <div className="absolute inset-0 z-10">
                 <YoutubeBackgroundPlayer 
