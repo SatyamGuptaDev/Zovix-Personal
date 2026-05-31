@@ -18,38 +18,24 @@ export function TrailerModal({ isOpen, onClose, videoKey }: { isOpen: boolean, o
     const checkAvailability = async () => {
       setLoading(true);
       try {
-        // 1. Try our hacker server-side playability check first
-        const apiRes = await fetch(`/api/check-video?id=${videoKey}`);
-        if (apiRes.ok) {
-          const data = await apiRes.json();
-          if (isMounted) {
-            // ONLY show the custom warning screen if the server successfully loaded the page and 100% confirmed it is restricted!
-            const isConfirmedRestricted = data.playable === false && data.reason === 'restricted';
-            
-            if (isConfirmedRestricted) {
-              setIsPlayable(false);
-            } else {
-              // Otherwise, fail-safe to playing in the iframe (which plays successfully for standard trailers on Vercel!)
-              setIsPlayable(true);
-            }
-            setLoading(false);
-            return;
-          }
-        }
-      } catch (e) {
-        console.warn('Hacker check failed, falling back to oEmbed:', e);
-      }
-
-      // 2. Failsafe fallback: oEmbed check
-      try {
+        // Direct client-side oEmbed query using the user's browser residential IP (bypasses serverless IP blocking)
         const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoKey}`);
         if (isMounted) {
-          setIsPlayable(res.status === 200);
+          if (res.status === 200) {
+            setIsPlayable(true);
+          } else if (res.status === 401 || res.status === 403) {
+            // Age-restricted mature trailers return 401/403
+            setIsPlayable(false);
+          } else {
+            // Other non-CORS response issues: failsafe to iframe playback
+            setIsPlayable(true);
+          }
           setLoading(false);
         }
       } catch (e) {
+        console.warn('Hacker check failed, falling back to iframe playback:', e);
         if (isMounted) {
-          setIsPlayable(false);
+          setIsPlayable(true); // Fail-safe to iframe
           setLoading(false);
         }
       }

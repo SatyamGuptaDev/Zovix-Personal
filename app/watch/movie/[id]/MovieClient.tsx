@@ -30,28 +30,22 @@ export function MovieClient({ movie }: { movie: MediaDetails }) {
     let isMounted = true;
     const checkAvailability = async () => {
       try {
-        // 1. Try our hacker server-side playability check first
-        const apiRes = await fetch(`/api/check-video?id=${trailer.key}`);
-        if (apiRes.ok) {
-          const data = await apiRes.json();
-          if (isMounted) {
-            setIsTrailerPlayable(data.playable);
-            return;
+        // Direct client-side oEmbed query using the user's browser residential IP (bypasses serverless IP blocking)
+        const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${trailer.key}`);
+        if (isMounted) {
+          if (res.status === 200) {
+            setIsTrailerPlayable(true);
+          } else if (res.status === 401 || res.status === 403) {
+            // Age-restricted mature trailers return 401/403
+            setIsTrailerPlayable(false);
+          } else {
+            setIsTrailerPlayable(true); // Failsafe to true to try embedding it
           }
         }
       } catch (e) {
-        console.warn('Hacker background check failed, falling back to oEmbed:', e);
-      }
-
-      // 2. Failsafe fallback: oEmbed check
-      try {
-        const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${trailer.key}`);
+        console.warn('Hacker background check failed, falling back to iframe:', e);
         if (isMounted) {
-          setIsTrailerPlayable(res.status === 200);
-        }
-      } catch (e) {
-        if (isMounted) {
-          setIsTrailerPlayable(false);
+          setIsTrailerPlayable(true); // Failsafe to true to try embedding it
         }
       }
     };
