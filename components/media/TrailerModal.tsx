@@ -19,14 +19,14 @@ export function TrailerModal({ isOpen, onClose, videoKey }: { isOpen: boolean, o
 
     let isMounted = true;
     
-    // Failsafe timeout: if it doesn't confirm playability in 2.2 seconds, assume it is age-restricted
+    // Failsafe timeout: if it doesn't confirm playability in 6 seconds, assume it is age-restricted
     const timeoutId = setTimeout(() => {
       if (isMounted && isPlayable === null) {
         console.log(`Trailer modal playability timeout for video: ${videoKey}. Falling back to YouTube redirect.`);
         setIsPlayable(false);
         setLoading(false);
       }
-    }, 2200);
+    }, 6000);
 
     const handleMessage = (e: MessageEvent) => {
       if (!isMounted) return;

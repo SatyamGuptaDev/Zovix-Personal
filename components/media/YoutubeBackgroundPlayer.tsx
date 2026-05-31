@@ -25,13 +25,13 @@ export function YoutubeBackgroundPlayer({ videoKey, backdropPath, title }: Youtu
 
     let isMounted = true;
     
-    // Failsafe timeout: if it hasn't started playing in 2.5 seconds, fall back to the static poster
+    // Generous 12-second failsafe timeout to prevent premature cutoffs on slow connections
     const timeoutId = setTimeout(() => {
-      if (isMounted && !isPlaying) {
-        console.log(`Playback timeout for video: ${videoKey}, falling back to static poster.`);
+      if (isMounted) {
+        console.log(`Playback failsafe triggered for video: ${videoKey}, falling back to static poster.`);
         setFailed(true);
       }
-    }, 2500);
+    }, 12000);
 
     const handleMessage = (e: MessageEvent) => {
       if (!isMounted) return;
