@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { Search, User, Home, Film, Tv, Compass } from 'lucide-react';
+import { Search, User, Home, Film, Tv, Compass, Sparkles } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { href: '/', label: 'Home' },
   { href: '/movies', label: 'Movies' },
   { href: '/tv', label: 'Series' },
+  { href: '/anime', label: 'Anime' },
   { href: '/discover', label: 'Discover' },
 ];
 
@@ -15,6 +16,7 @@ const MOBILE_DOCK_ITEMS = [
   { href: '/', label: 'Home', Icon: Home },
   { href: '/movies', label: 'Movies', Icon: Film },
   { href: '/tv', label: 'Series', Icon: Tv },
+  { href: '/anime', label: 'Anime', Icon: Sparkles },
   { href: '/discover', label: 'Discover', Icon: Compass },
 ];
 

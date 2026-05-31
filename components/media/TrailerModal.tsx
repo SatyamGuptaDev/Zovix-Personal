@@ -23,6 +23,16 @@ export function TrailerModal({ isOpen, onClose, videoKey }: { isOpen: boolean, o
         if (apiRes.ok) {
           const data = await apiRes.json();
           if (isMounted) {
+            // If the server-side API encountered a rate-limit, timeout, or block by YouTube (very common for Vercel serverless IPs)
+            const isServerError = data.error || (data.reason && data.reason !== 'restricted');
+            
+            if (isServerError) {
+              console.warn('Server-side check rate-limited, timed out, or blocked on Vercel serverless IPs. Failsafe: Default to playable.');
+              setIsPlayable(true); // Fail-safe to playing standard embed
+              setLoading(false);
+              return;
+            }
+
             setIsPlayable(data.playable);
             setLoading(false);
             return;

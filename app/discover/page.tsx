@@ -30,18 +30,25 @@ export default function DiscoverPage() {
 
   const fetchResults = useCallback((currentPage: number) => {
     setLoading(true);
+    const requestType = type === 'anime' ? 'tv' : type;
+
     const params: Record<string, string> = {
       sort_by: sort,
       include_adult: adultContent ? 'true' : 'false',
       page: currentPage.toString(),
     };
     
-    if (originalLanguage?.length > 0) {
-      params.with_original_language = originalLanguage.join('|');
-    }
-    
-    if (genres.length > 0) {
-      params.with_genres = genres.join(','); // TMDB uses comma for AND/OR depending on query, comma is OR, pipe is AND. Usually comma is fine for multiple genres.
+    if (type === 'anime') {
+      // Enforce Animation genre (16) and Japanese original language for genuine Anime
+      params.with_genres = genres.length > 0 ? [...genres, '16'].join(',') : '16';
+      params.with_original_language = 'ja';
+    } else {
+      if (originalLanguage?.length > 0) {
+        params.with_original_language = originalLanguage.join('|');
+      }
+      if (genres.length > 0) {
+        params.with_genres = genres.join(',');
+      }
     }
     
     if (year !== 'all') {
@@ -59,9 +66,9 @@ export default function DiscoverPage() {
       }
     }
 
-    discoverMedia(type as 'movie' | 'tv', params).then(res => {
+    discoverMedia(requestType as 'movie' | 'tv', params).then(res => {
       const items = res.results || [];
-      setResults(items.map((i: any) => ({ ...i, media_type: type })));
+      setResults(items.map((i: any) => ({ ...i, media_type: type as any })));
       // Cap at 500 pages as per TMDB limits
       setTotalPages(Math.min(res.total_pages || 1, 500));
       setLoading(false);

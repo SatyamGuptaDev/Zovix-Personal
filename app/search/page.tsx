@@ -22,7 +22,7 @@ function SearchPageContent() {
   const [focused, setFocused] = useState(false);
 
   // Filters
-  const [typeFilter, setTypeFilter] = useState<'all' | 'movie' | 'tv'>('all');
+  const [typeFilter, setTypeFilter] = useState<'all' | 'movie' | 'tv' | 'anime'>('all');
   const [sortBy, setSortBy] = useState('relevance'); // 'relevance' or 'newest'
 
   const { preferences } = usePreferences();
@@ -70,6 +70,11 @@ function SearchPageContent() {
 
   // Apply local filters
   const filteredResults = results.filter(item => {
+    if (typeFilter === 'anime') {
+      const isAnimation = item.genre_ids?.includes(16);
+      const isJapanese = item.original_language === 'ja';
+      return isAnimation && isJapanese;
+    }
     if (typeFilter !== 'all' && item.media_type !== typeFilter) return false;
     return true;
   }).sort((a, b) => {
@@ -167,6 +172,14 @@ function SearchPageContent() {
               }`}
             >
               <Tv size={14} /> Series
+            </button>
+            <button 
+              onClick={() => setTypeFilter('anime')}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-semibold transition-all border ${
+                typeFilter === 'anime' ? 'bg-white/15 border-white/20 text-white shadow-md' : 'bg-transparent border-transparent text-white/50 hover:bg-white/5 hover:text-white/80'
+              }`}
+            >
+              <Sparkles size={14} /> Anime
             </button>
             
             <div className="w-[1px] h-5 bg-white/10 mx-2"></div>

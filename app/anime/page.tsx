@@ -1,57 +1,35 @@
 import { tmdb } from '@/lib/tmdb';
-import { HorizontalRow } from '@/components/media/HorizontalRow';
-import { Star } from 'lucide-react';
+import { AnimeDashboard } from '@/components/media/AnimeDashboard';
+import { Media } from '@/types/tmdb';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AnimePage() {
-  const anime = await tmdb.getAnime();
-
-  return (
-    <div className="flex flex-col min-h-screen pb-28 md:pb-20 bg-black">
-      {/* Page Header */}
-      <div className="relative px-6 md:px-14 pt-28 md:pt-32 pb-8 overflow-hidden">
-        <div
-          className="absolute top-0 left-0 right-0 h-64 pointer-events-none"
-          style={{
-            background: 'radial-gradient(ellipse 60% 100% at 20% 0%, rgba(168,85,247,0.1) 0%, transparent 70%)',
-          }}
-        />
-        <div className="relative flex items-center gap-4">
-          <div
-            className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
-            style={{
-              background: 'linear-gradient(135deg, rgba(88,28,220,0.2), rgba(88,28,220,0.05))',
-              border: '1px solid rgba(88,28,220,0.3)',
-            }}
-          >
-            <Star size={22} className="text-purple-400" />
-          </div>
-          <div>
-            <h1 className="text-3xl md:text-4xl font-display font-black tracking-tight text-white">
-              Anime
-            </h1>
-            <p className="text-sm text-white/35 mt-0.5">
-              Top-rated anime series and films from Japan and beyond
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Top 10 numbered */}
-      <div className="px-2">
-        <HorizontalRow
-          title="🏆 Top 10 Anime"
-          items={anime.results?.slice(0, 10) || []}
-          variant="numbered"
-        />
-      </div>
-
-      {/* All anime */}
-      <HorizontalRow
-        title="✨ Discover Anime"
-        items={anime.results || []}
-      />
-    </div>
+function deduplicate(items: Media[]) {
+  return items.filter((item, index, self) => 
+    item && item.id && index === self.findIndex((t) => t.id === item.id)
   );
+}
+
+export default async function AnimePage() {
+  // Concurrently fetch Trending Anime (Pages 1 & 2) and Top Rated Anime (Pages 1 to 5)
+  const [trendP1, trendP2, topP1, topP2, topP3, topP4, topP5] = await Promise.all([
+    tmdb.discover("tv", { with_genres: "16", with_original_language: "ja", sort_by: "popularity.desc", page: "1" }),
+    tmdb.discover("tv", { with_genres: "16", with_original_language: "ja", sort_by: "popularity.desc", page: "2" }).catch(() => ({ results: [] })),
+    tmdb.discover("tv", { with_genres: "16", with_original_language: "ja", sort_by: "vote_average.desc", "vote_count.gte": "100", page: "1" }),
+    tmdb.discover("tv", { with_genres: "16", with_original_language: "ja", sort_by: "vote_average.desc", "vote_count.gte": "100", page: "2" }).catch(() => ({ results: [] })),
+    tmdb.discover("tv", { with_genres: "16", with_original_language: "ja", sort_by: "vote_average.desc", "vote_count.gte": "100", page: "3" }).catch(() => ({ results: [] })),
+    tmdb.discover("tv", { with_genres: "16", with_original_language: "ja", sort_by: "vote_average.desc", "vote_count.gte": "100", page: "4" }).catch(() => ({ results: [] })),
+    tmdb.discover("tv", { with_genres: "16", with_original_language: "ja", sort_by: "vote_average.desc", "vote_count.gte": "100", page: "5" }).catch(() => ({ results: [] })),
+  ]);
+
+  const trending = deduplicate([...(trendP1.results || []), ...(trendP2.results || [])]);
+  const topRated = deduplicate([
+    ...(topP1.results || []),
+    ...(topP2.results || []),
+    ...(topP3.results || []),
+    ...(topP4.results || []),
+    ...(topP5.results || [])
+  ]);
+
+  return <AnimeDashboard trendingAnime={trending} topRatedAnime={topRated} />;
 }

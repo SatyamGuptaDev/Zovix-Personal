@@ -6,12 +6,13 @@ import { Top10Row } from '@/components/media/Top10Row';
 import { RecommendedForYou } from '@/components/media/RecommendedForYou';
 
 export default async function Home() {
-  const [trending, popMovies, popTv, topMovies, topTv] = await Promise.all([
+  const [trending, popMovies, popTv, topMovies, topTv, popAnime] = await Promise.all([
     tmdb.getTrending('all'),
     tmdb.getPopular('movie'),
     tmdb.getPopular('tv'),
     tmdb.getTopRated('movie'),
     tmdb.getTopRated('tv'),
+    tmdb.getAnime('1').catch(() => ({ results: [] })),
   ]);
 
   const top6Trending = trending.results?.slice(0, 6) || [];
@@ -56,6 +57,12 @@ export default async function Home() {
           title="📺 Popular TV Shows"
           items={popTv.results?.slice(0, 20) || []}
           seeAllHref="/tv"
+        />
+
+        <HorizontalRow
+          title="🌸 Anime Corner"
+          items={popAnime.results?.slice(0, 20) || []}
+          seeAllHref="/anime"
         />
 
         <HorizontalRow

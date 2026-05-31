@@ -54,6 +54,7 @@ const SORTS = [
 const TYPES = [
   { value: 'movie', label: 'Movies' },
   { value: 'tv', label: 'TV Shows' },
+  { value: 'anime', label: 'Anime' },
 ];
 
 export function FilterDrawer({
