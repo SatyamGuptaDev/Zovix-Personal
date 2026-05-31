@@ -39,164 +39,27 @@ export function Navbar() {
 
   return (
     <>
-      {/* Inline styles for custom high-performance animations */}
-      <style dangerouslySetInnerHTML={{__html: `
-        @keyframes liquid-drift-1 {
-          0% { transform: translate(-10%, -10%) scale(1) rotate(0deg); opacity: 0.25; }
-          50% { transform: translate(10%, 10%) scale(1.2) rotate(180deg); opacity: 0.38; }
-          100% { transform: translate(-10%, -10%) scale(1) rotate(360deg); opacity: 0.25; }
-        }
-        @keyframes liquid-drift-2 {
-          0% { transform: translate(10%, 10%) scale(1.1) rotate(180deg); opacity: 0.2; }
-          50% { transform: translate(-10%, -10%) scale(0.9) rotate(0deg); opacity: 0.35; }
-          100% { transform: translate(10%, 10%) scale(1.1) rotate(180deg); opacity: 0.2; }
-        }
-        @keyframes rainbow-sweep {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        @keyframes glint-drift {
-          0% { transform: translateX(-150%) skewX(-30deg); }
-          50% { transform: translateX(150%) skewX(-30deg); }
-          100% { transform: translateX(150%) skewX(-30deg); }
-        }
-        .liquid-wave-1 {
-          animation: liquid-drift-1 14s infinite linear;
-        }
-        .liquid-wave-2 {
-          animation: liquid-drift-2 18s infinite linear;
-        }
-        
-        .glass-pill-container {
-          position: relative;
-          background: linear-gradient(to bottom, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
-          border: 1px solid rgba(255, 255, 255, 0.22);
-          box-shadow: 
-            0 20px 40px -15px rgba(0, 0, 0, 0.75), 
-            inset 0 1.5px 0 0 rgba(255, 255, 255, 0.45),
-            inset 0 -1.5px 2px 0 rgba(255, 255, 255, 0.15),
-            inset 0 10px 20px -10px rgba(255, 255, 255, 0.12);
-          backdrop-filter: blur(28px) saturate(240%) contrast(120%) brightness(0.95);
-          -webkit-backdrop-filter: blur(28px) saturate(240%) contrast(120%) brightness(0.95);
-          transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .glass-pill-container::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          border-radius: 9999px;
-          background: linear-gradient(90deg, rgba(255, 0, 85, 0.35), rgba(0, 255, 204, 0.35), rgba(0, 85, 255, 0.35), rgba(255, 204, 0, 0.35), rgba(255, 0, 85, 0.35));
-          background-size: 300% 300%;
-          animation: rainbow-sweep 10s infinite linear;
-          mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          mask-composite: exclude;
-          -webkit-mask-composite: xor;
-          padding: 1.2px;
-          pointer-events: none;
-          opacity: 0.55;
-          z-index: 5;
-        }
-
-        /* Specular bottle light streak (curved bottle sheen) */
-        .bottle-sheen-highlight {
-          position: absolute;
-          top: 0;
-          left: 5%;
-          right: 5%;
-          height: 35%;
-          background: linear-gradient(to bottom, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.05) 80%, transparent 100%);
-          border-radius: 9999px 9999px 0 0;
-          pointer-events: none;
-          mix-blend-mode: overlay;
-          z-index: -2;
-        }
-        
-        /* A bright specular sweeping glint */
-        .bottle-glint {
-          position: absolute;
-          inset: 0;
-          width: 200%;
-          background: linear-gradient(90deg, transparent 42%, rgba(255, 255, 255, 0.38) 50%, transparent 58%);
-          transform: skewX(-30deg);
-          animation: glint-drift 12s infinite ease-in-out;
-          pointer-events: none;
-          mix-blend-mode: overlay;
-          z-index: -2;
-        }
-        
-        /* Wobbly water refraction layer inside the bottle */
-        .water-refraction-body {
-          position: absolute;
-          inset: 0;
-          border-radius: 9999px;
-          overflow: hidden;
-          pointer-events: none;
-          z-index: -5;
-          filter: url(#trippy-glass-distortion);
-          opacity: 0.85;
-        }
-        
-        .water-caustics {
-          position: absolute;
-          inset: -20%;
-          background-image: 
-            radial-gradient(circle at 30% 20%, rgba(0, 240, 255, 0.3) 0%, transparent 45%),
-            radial-gradient(circle at 70% 80%, rgba(255, 0, 128, 0.25) 0%, transparent 45%),
-            radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
-          mix-blend-mode: color-dodge;
-        }
-      `}} />
-
       {/* ── DESKTOP FLOATING PILL NAV ── */}
       <nav
         className={`hidden md:flex fixed z-[200] left-0 right-0 justify-center px-4 transition-all duration-500 ${scrolled ? 'top-3' : 'top-6'}`}
       >
-        <div className="group glass-pill-container flex items-center px-6 py-2.5 gap-6 rounded-full transition-all duration-350 animate-slide-up overflow-hidden">
-          
-          {/* Layer 1: Specular glass bottle highlights & sweeping reflection glint */}
-          <div className="bottle-sheen-highlight" />
-          <div className="bottle-glint" />
-          
-          {/* Layer 2: Trippy Liquid Refraction Body (contains blobs and caustics, warped by SVG filter) */}
-          <div className="water-refraction-body">
-            <div 
-              className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] rounded-[38%] liquid-wave-1"
-              style={{
-                background: 'radial-gradient(circle, rgba(0, 240, 255, 0.45) 0%, transparent 60%)',
-              }}
-            />
-            <div 
-              className="absolute -bottom-1/2 -right-1/2 w-[200%] h-[200%] rounded-[43%] liquid-wave-2"
-              style={{
-                background: 'radial-gradient(circle, rgba(255, 0, 128, 0.35) 0%, transparent 60%)',
-              }}
-            />
-            <div className="water-caustics" />
-
-            {/* Simulated cylindrical light refraction mesh */}
-            <div 
-              className="absolute inset-0 mix-blend-overlay opacity-[0.35]"
-              style={{
-                backgroundImage: `
-                  repeating-linear-gradient(90deg, rgba(0, 240, 255, 0.12) 0px, rgba(0, 240, 255, 0.12) 1.5px, transparent 1.5px, transparent 15px),
-                  repeating-linear-gradient(0deg, rgba(255, 0, 128, 0.12) 0px, rgba(255, 0, 128, 0.12) 1.5px, transparent 1.5px, transparent 15px)
-                `,
-                backgroundSize: '200px 100px',
-                animation: 'liquid-drift-1 10s infinite alternate ease-in-out',
-              }}
-            />
-          </div>
-
-          {/* Layer 3: Inner Specular Gloss Overlay */}
+        <div
+          className="group relative flex items-center px-5 py-2.5 gap-5 rounded-full transition-all duration-300"
+          style={{
+            backgroundColor: 'rgba(10, 8, 12, 0.45)',
+            backdropFilter: 'blur(20px) saturate(180%) contrast(120%) brightness(1.1)',
+            WebkitBackdropFilter: 'blur(20px) saturate(180%) contrast(120%) brightness(1.1)',
+            border: '1px solid rgba(255, 165, 80, 0.15)',
+            boxShadow: '0 20px 40px -10px rgba(0,0,0,0.7), inset 0 1px 1px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(255, 165, 80, 0.1)',
+          }}
+        >
+          {/* ── Inner Reflections ── */}
           <div 
-            className="absolute inset-0 rounded-full pointer-events-none overflow-hidden opacity-45 mix-blend-overlay transition-opacity duration-300 group-hover:opacity-65"
+            className="absolute inset-0 rounded-full pointer-events-none overflow-hidden opacity-50 mix-blend-overlay transition-opacity duration-300 group-hover:opacity-70"
             style={{
               background: `
-                linear-gradient(to bottom, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.08) 25%, transparent 50%, rgba(255,255,255,0.03) 75%, rgba(255,255,255,0.25) 100%),
-                linear-gradient(to right, rgba(255,255,255,0.12) 0%, transparent 12%, transparent 88%, rgba(255,255,255,0.12) 100%)
+                linear-gradient(to bottom, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.05) 20%, transparent 50%, rgba(255,255,255,0.02) 80%, rgba(255,255,255,0.2) 100%),
+                linear-gradient(to right, rgba(255,255,255,0.1) 0%, transparent 10%, transparent 90%, rgba(255,255,255,0.1) 100%)
               `
             }}
           />
@@ -336,29 +199,6 @@ export function Navbar() {
           })}
         </div>
       </nav>
-
-      {/* ── Trippy Glass Liquid Water-Bottle Displacement Map ── */}
-      <svg className="absolute w-0 h-0 pointer-events-none overflow-hidden" aria-hidden="true" style={{ width: 0, height: 0, position: 'absolute' }}>
-        <defs>
-          <filter id="trippy-glass-distortion" x="-30%" y="-30%" width="160%" height="160%">
-            {/* Create horizontal-heavy fluid ripples for highly realistic cylindrical bottle water displacement */}
-            <feTurbulence 
-              type="fractalNoise" 
-              baseFrequency="0.01 0.04" 
-              numOctaves="3" 
-              result="noise" 
-              seed="4"
-            />
-            <feDisplacementMap 
-              in="SourceGraphic" 
-              in2="noise" 
-              scale="22" 
-              xChannelSelector="R" 
-              yChannelSelector="G" 
-            />
-          </filter>
-        </defs>
-      </svg>
     </>
   );
 }
