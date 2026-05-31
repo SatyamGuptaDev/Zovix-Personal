@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { Search, User, Home, Film, Tv, Compass, Sparkles, Bell, Settings, Rocket } from 'lucide-react';
+import { Search, User, Home, Film, Tv, Compass, Sparkles } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
@@ -44,22 +44,18 @@ export function Navbar() {
         className={`hidden md:flex fixed z-[200] left-0 right-0 justify-center px-4 transition-all duration-500 ${scrolled ? 'top-3' : 'top-6'}`}
       >
         <div
-          className="group relative flex items-center px-5 py-2.5 gap-5 rounded-full transition-all duration-300 overflow-hidden"
+          className="group relative flex items-center px-5 py-2.5 gap-5 rounded-full transition-all duration-300 animate-slide-up"
           style={{
-            backgroundColor: 'rgba(10, 8, 12, 0.48)',
-            backdropFilter: 'blur(24px) saturate(180%) contrast(120%) brightness(1.1)',
-            WebkitBackdropFilter: 'blur(24px) saturate(180%) contrast(120%) brightness(1.1)',
-            border: '1px solid rgba(255, 165, 80, 0.16)',
-            boxShadow: '0 20px 45px -10px rgba(0,0,0,0.85), inset 0 1px 1px rgba(255,255,255,0.22), inset 0 -1px 2px rgba(255, 165, 80, 0.12)',
+            backgroundColor: 'rgba(5, 4, 6, 0.55)',
+            backdropFilter: 'url(#trippy-glass-distortion) blur(24px) saturate(220%) contrast(135%) brightness(0.95)',
+            WebkitBackdropFilter: 'url(#trippy-glass-distortion) blur(24px) saturate(220%) contrast(135%) brightness(0.95)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            boxShadow: '0 20px 45px -10px rgba(0,0,0,0.85), inset 0 1px 1px rgba(255,255,255,0.25)',
           }}
         >
-          {/* ── Dynamic Liquid Glass & Amber Sweeps ── */}
-          <div className="absolute left-4 top-0 bottom-0 w-32 pointer-events-none rounded-full amber-glass-glow z-0" />
-          <div className="absolute right-4 top-0 bottom-0 w-64 pointer-events-none rounded-full chromatic-glass-overlay z-0" />
-
           {/* ── Inner Reflections ── */}
           <div 
-            className="absolute inset-0 rounded-full pointer-events-none overflow-hidden opacity-40 mix-blend-overlay transition-opacity duration-300 group-hover:opacity-60"
+            className="absolute inset-0 rounded-full pointer-events-none overflow-hidden opacity-50 mix-blend-overlay transition-opacity duration-300 group-hover:opacity-70"
             style={{
               background: `
                 linear-gradient(to bottom, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.05) 20%, transparent 50%, rgba(255,255,255,0.02) 80%, rgba(255,255,255,0.2) 100%),
@@ -72,14 +68,9 @@ export function Navbar() {
           <Link
             href="/"
             onClick={clearIframes}
-            className="flex items-center z-10 transition-all duration-300 hover:opacity-85 active:scale-95 select-none"
+            className="flex items-center z-10 transition-all duration-300 hover:opacity-80 active:scale-95 select-none"
             aria-label="ZIVOX Home"
           >
-            <Rocket 
-              size={17} 
-              className="text-white fill-white animate-pulse mr-2" 
-              style={{ filter: 'drop-shadow(0 0 6px rgba(249, 115, 22, 0.85))' }}
-            />
             <span
               className="font-display font-black tracking-[-0.05em] text-[18px] leading-none"
               style={{
@@ -149,7 +140,7 @@ export function Navbar() {
           </div>
 
           {/* Action Icons (Right) */}
-          <div className="flex items-center gap-4.5 z-10 ml-2">
+          <div className="flex items-center gap-4 z-10 ml-2">
             <Link
               href="/search"
               onClick={clearIframes}
@@ -158,20 +149,6 @@ export function Navbar() {
             >
               <Search size={17} strokeWidth={2} />
             </Link>
-            <button
-              onClick={() => alert("🔔 Notifications: ZIVOX is up to date!")}
-              className="text-white/60 hover:text-white transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer"
-              aria-label="Notifications"
-            >
-              <Bell size={17} strokeWidth={2} />
-            </button>
-            <button
-              onClick={() => alert("⚙️ Settings: High Glassmorphism Redirection is Active!")}
-              className="text-white/60 hover:text-white transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer"
-              aria-label="Settings"
-            >
-              <Settings size={17} strokeWidth={2} />
-            </button>
             <Link
               href="/profile"
               onClick={clearIframes}
@@ -222,6 +199,29 @@ export function Navbar() {
           })}
         </div>
       </nav>
+
+      {/* ── Trippy Glass Liquid Water-Bottle Displacement Map ── */}
+      <svg className="absolute w-0 h-0 pointer-events-none overflow-hidden" aria-hidden="true" style={{ width: 0, height: 0, position: 'absolute' }}>
+        <defs>
+          <filter id="trippy-glass-distortion" x="-20%" y="-20%" width="140%" height="140%">
+            {/* Create vertical liquid ripple noise to refract backdrop elements horizontally */}
+            <feTurbulence 
+              type="fractalNoise" 
+              baseFrequency="0.015 0.08" 
+              numOctaves="3" 
+              result="noise" 
+              seed="2"
+            />
+            <feDisplacementMap 
+              in="SourceGraphic" 
+              in2="noise" 
+              scale="24" 
+              xChannelSelector="R" 
+              yChannelSelector="G" 
+            />
+          </filter>
+        </defs>
+      </svg>
     </>
   );
 }
