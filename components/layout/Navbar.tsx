@@ -39,23 +39,102 @@ export function Navbar() {
 
   return (
     <>
+      {/* Inline styles for custom high-performance animations */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes liquid-drift-1 {
+          0% { transform: translate(-8%, -8%) scale(1) rotate(0deg); opacity: 0.25; }
+          50% { transform: translate(8%, 8%) scale(1.2) rotate(180deg); opacity: 0.38; }
+          100% { transform: translate(-8%, -8%) scale(1) rotate(360deg); opacity: 0.25; }
+        }
+        @keyframes liquid-drift-2 {
+          0% { transform: translate(8%, 8%) scale(1.15) rotate(180deg); opacity: 0.2; }
+          50% { transform: translate(-8%, -8%) scale(0.95) rotate(0deg); opacity: 0.35; }
+          100% { transform: translate(8%, 8%) scale(1.15) rotate(180deg); opacity: 0.2; }
+        }
+        @keyframes rainbow-sweep {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .liquid-wave-1 {
+          animation: liquid-drift-1 14s infinite linear;
+        }
+        .liquid-wave-2 {
+          animation: liquid-drift-2 18s infinite linear;
+        }
+        .prism-border {
+          background: linear-gradient(90deg, #ff0055, #00ffcc, #0055ff, #ffcc00, #ff0055);
+          background-size: 300% 300%;
+          animation: rainbow-sweep 8s infinite linear;
+        }
+      `}} />
+
       {/* ── DESKTOP FLOATING PILL NAV ── */}
       <nav
         className={`hidden md:flex fixed z-[200] left-0 right-0 justify-center px-4 transition-all duration-500 ${scrolled ? 'top-3' : 'top-6'}`}
       >
         <div
-          className="group relative flex items-center px-5 py-2.5 gap-5 rounded-full transition-all duration-300 animate-slide-up"
+          className="group relative flex items-center px-5 py-2.5 gap-5 rounded-full transition-all duration-300 animate-slide-up overflow-hidden"
           style={{
-            backgroundColor: 'rgba(5, 4, 6, 0.55)',
-            backdropFilter: 'url(#trippy-glass-distortion) blur(24px) saturate(220%) contrast(135%) brightness(0.95)',
-            WebkitBackdropFilter: 'url(#trippy-glass-distortion) blur(24px) saturate(220%) contrast(135%) brightness(0.95)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            boxShadow: '0 20px 45px -10px rgba(0,0,0,0.85), inset 0 1px 1px rgba(255,255,255,0.25)',
+            backgroundColor: 'rgba(4, 2, 6, 0.48)',
+            border: '1px solid rgba(255, 255, 255, 0.05)',
+            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.9), inset 0 1px 1px rgba(255,255,255,0.22)',
           }}
         >
-          {/* ── Inner Reflections ── */}
+          {/* Layer 1: Hyper Blur & Saturated Contrast Backdrop */}
           <div 
-            className="absolute inset-0 rounded-full pointer-events-none overflow-hidden opacity-50 mix-blend-overlay transition-opacity duration-300 group-hover:opacity-70"
+            className="absolute inset-0 rounded-full pointer-events-none overflow-hidden -z-10"
+            style={{
+              backdropFilter: 'url(#trippy-glass-distortion) blur(32px) saturate(240%) contrast(140%) brightness(0.92)',
+              WebkitBackdropFilter: 'url(#trippy-glass-distortion) blur(32px) saturate(240%) contrast(140%) brightness(0.92)',
+            }}
+          />
+
+          {/* Layer 2: Shifting Liquid Refraction Blobs (Water Bottle effect) */}
+          <div className="absolute inset-0 rounded-full overflow-hidden pointer-events-none opacity-45 mix-blend-color-dodge -z-10">
+            <div 
+              className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] rounded-[38%] liquid-wave-1"
+              style={{
+                background: 'radial-gradient(circle, rgba(0, 240, 255, 0.4) 0%, transparent 60%)',
+              }}
+            />
+            <div 
+              className="absolute -bottom-1/2 -right-1/2 w-[200%] h-[200%] rounded-[43%] liquid-wave-2"
+              style={{
+                background: 'radial-gradient(circle, rgba(255, 0, 128, 0.35) 0%, transparent 60%)',
+              }}
+            />
+          </div>
+
+          {/* Layer 3: Chromatic Glare Ripple Overlay (warps behind elements) */}
+          <div 
+            className="absolute inset-0 rounded-full pointer-events-none overflow-hidden mix-blend-overlay opacity-[0.38] -z-10"
+            style={{
+              backgroundImage: `
+                repeating-linear-gradient(90deg, rgba(0, 240, 255, 0.15) 0px, rgba(0, 240, 255, 0.15) 1.5px, transparent 1.5px, transparent 15px),
+                repeating-linear-gradient(0deg, rgba(255, 0, 128, 0.15) 0px, rgba(255, 0, 128, 0.15) 1.5px, transparent 1.5px, transparent 15px)
+              `,
+              backgroundSize: '200px 100px',
+              animation: 'liquid-drift-1 12s infinite alternate ease-in-out',
+            }}
+          />
+
+          {/* Layer 4: Rainbow Prism Edge reflection (Chromatic Aberration Border!) */}
+          <div 
+            className="absolute inset-0 rounded-full pointer-events-none opacity-45"
+            style={{
+              padding: '1.2px',
+              WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+              WebkitMaskComposite: 'xor',
+              maskComposite: 'exclude',
+            }}
+          >
+            <div className="w-full h-full rounded-full prism-border" />
+          </div>
+
+          {/* Layer 5: Inner Reflections */}
+          <div 
+            className="absolute inset-0 rounded-full pointer-events-none overflow-hidden opacity-45 mix-blend-overlay transition-opacity duration-300 group-hover:opacity-65"
             style={{
               background: `
                 linear-gradient(to bottom, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.05) 20%, transparent 50%, rgba(255,255,255,0.02) 80%, rgba(255,255,255,0.2) 100%),
