@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Search, User, Home, Film, Tv, Compass, Sparkles } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 const NAV_ITEMS = [
   { href: '/', label: 'Home' },
@@ -23,6 +23,7 @@ const MOBILE_DOCK_ITEMS = [
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 60);
@@ -39,6 +40,56 @@ export function Navbar() {
 
   return (
     <>
+      {/* ── MOBILE TOP NAV ── */}
+      <nav className="md:hidden fixed top-0 left-0 right-0 z-[200] px-5 py-4 flex items-center justify-between" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.95), rgba(0,0,0,0.8) 60%, transparent)' }}>
+        <Link href="/" onClick={clearIframes} className="flex items-center z-10 transition-all duration-300 hover:opacity-80 active:scale-95 select-none" aria-label="ZIVOX Home">
+            <span
+              className="font-display font-black tracking-[-0.05em] text-[18px] leading-none"
+              style={{
+                background: 'linear-gradient(135deg, #ffffff 40%, rgba(255,255,255,0.65) 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                letterSpacing: '-0.04em',
+              }}
+            >
+              ZIV
+            </span>
+            <span
+              className="font-display font-black text-[18px] leading-none mx-[1px]"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '18px',
+                height: '18px',
+                borderRadius: '50%',
+                border: '2px solid rgba(229, 9, 20, 0.9)',
+                boxShadow: '0 0 10px rgba(229,9,20,0.5), inset 0 0 6px rgba(229,9,20,0.2)',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+            </span>
+            <span
+              className="font-display font-black tracking-[-0.05em] text-[18px] leading-none"
+              style={{
+                background: 'linear-gradient(135deg, #ffffff 40%, rgba(255,255,255,0.65) 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                letterSpacing: '-0.04em',
+              }}
+            >
+              X
+            </span>
+        </Link>
+        <div className="flex items-center gap-4 z-10">
+          <Link href="/search" onClick={clearIframes} className="text-white hover:text-white/80 transition-all duration-300 hover:scale-110 active:scale-95"><Search size={20} strokeWidth={2.5} /></Link>
+          <div className="w-[1px] h-5 bg-white/30" />
+          <Link href="/profile" onClick={clearIframes} className="text-white hover:text-white/80 transition-all duration-300 hover:scale-110 active:scale-95"><User size={20} strokeWidth={2.5} /></Link>
+        </div>
+      </nav>
+
       {/* ── DESKTOP FLOATING PILL NAV ── */}
       <nav
         className={`hidden md:flex fixed z-[200] left-0 right-0 justify-center px-4 transition-all duration-500 ${scrolled ? 'top-3' : 'top-6'}`}
@@ -165,10 +216,11 @@ export function Navbar() {
       <nav
         className="md:hidden fixed bottom-0 left-0 right-0 z-[200]"
         style={{
-          background: 'rgba(5, 5, 5, 0.97)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          borderTop: '1px solid rgba(255,255,255,0.07)',
+          background: 'rgba(10, 8, 12, 0.45)',
+          backdropFilter: 'blur(20px) saturate(180%) contrast(120%) brightness(1.1)',
+          WebkitBackdropFilter: 'blur(20px) saturate(180%) contrast(120%) brightness(1.1)',
+          borderTop: '1px solid rgba(255, 165, 80, 0.15)',
+          boxShadow: '0 -10px 30px -10px rgba(0,0,0,0.7), inset 0 1px 1px rgba(255,255,255,0.2)',
           paddingBottom: 'env(safe-area-inset-bottom)',
         }}
       >
@@ -179,7 +231,15 @@ export function Navbar() {
               <Link
                 key={href}
                 href={href}
-                onClick={clearIframes}
+                onClick={(e) => {
+                  clearIframes();
+                  if (href === '/') {
+                     if (pathname === '/') {
+                        e.preventDefault();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                     }
+                  }
+                }}
                 className={`flex flex-col items-center gap-1 py-1.5 px-3 rounded-xl transition-all duration-200 ${
                   active ? 'text-white' : 'text-white/35 hover:text-white/70'
                 }`}

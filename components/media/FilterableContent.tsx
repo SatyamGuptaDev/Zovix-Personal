@@ -36,7 +36,7 @@ export function FilterableContent({ sections }: { sections: { title: string; ite
   return (
     <div className="flex flex-col gap-2 w-full z-20 relative">
       {/* Genre filter pills */}
-      <div data-lenis-prevent="true" className="px-6 md:px-14 flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
+      <div className="px-6 md:px-14 flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar" style={{ touchAction: 'pan-x' }}>
         <button
           onClick={() => handleFilter(null)}
           className="flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200"

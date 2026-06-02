@@ -22,6 +22,26 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${space.variable} ${mono.variable}`}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if (typeof window !== 'undefined') {
+                const originalReleasePointerCapture = Element.prototype.releasePointerCapture;
+                Element.prototype.releasePointerCapture = function(pointerId) {
+                  try {
+                    originalReleasePointerCapture.call(this, pointerId);
+                  } catch (e) {
+                    if (e.name !== 'NotFoundError') {
+                      throw e;
+                    }
+                  }
+                };
+              }
+            `
+          }}
+        />
+      </head>
       <body className="bg-black text-zinc-100 min-h-screen flex flex-col font-body" suppressHydrationWarning>
         <SmoothScroll>
           {/* Ambient Background — Zivox Dark Violet */}
@@ -79,7 +99,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             />
           </div>
           <Navbar />
-          <main className="flex-1 flex flex-col">
+          <main className="flex-1 flex flex-col pb-20 md:pb-0">
             {children}
           </main>
           <Footer />

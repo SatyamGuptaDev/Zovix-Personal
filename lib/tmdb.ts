@@ -219,13 +219,25 @@ export async function getHeroItemsWithLogos(items: Media[]) {
     items.map(async (item) => {
       try {
         const type = (item.media_type === 'person' ? 'movie' : item.media_type) || (item.name ? 'tv' : 'movie');
-        const images = await tmdb.getImages(type as 'movie' | 'tv', item.id.toString());
+        
+        // Fetch both images and details concurrently
+        const [images, details] = await Promise.all([
+          tmdb.getImages(type as 'movie' | 'tv', item.id.toString()),
+          tmdb.getDetails(type as 'movie' | 'tv', item.id.toString())
+        ]);
+        
+        let logo_path = null;
         if (images && images.logos && images.logos.length > 0) {
           // Prefer english logos, fallback to first available
           const logo = images.logos.find((l: any) => l.iso_639_1 === 'en') || images.logos[0];
-          if (logo) return { ...item, logo_path: logo.file_path };
+          logo_path = logo?.file_path;
         }
-        return item;
+        
+        return {
+          ...item,
+          ...(logo_path ? { logo_path } : {}),
+          ...(details.number_of_seasons ? { number_of_seasons: details.number_of_seasons } : {})
+        };
       } catch (e) {
         return item;
       }

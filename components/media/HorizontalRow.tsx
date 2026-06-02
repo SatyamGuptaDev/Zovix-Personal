@@ -17,6 +17,7 @@ export function HorizontalRow({ title, items, seeAllHref, variant = 'default' }:
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   const checkScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -65,7 +66,7 @@ export function HorizontalRow({ title, items, seeAllHref, variant = 'default' }:
         aria-label="Scroll left"
         className={`absolute left-4 md:left-14 top-[55%] -translate-y-1/2 z-30 w-10 h-10
           flex items-center justify-center rounded-full transition-[opacity,transform] duration-200
-          ${canScrollLeft ? 'opacity-0 group-hover/row:opacity-100 hover:scale-110 active:scale-95' : 'opacity-0 pointer-events-none'}`}
+          ${canScrollLeft ? (hasInteracted ? 'opacity-100' : 'opacity-0') + ' md:opacity-0 md:group-hover/row:opacity-100 hover:scale-110 active:scale-95' : 'opacity-0 pointer-events-none'}`}
         style={{ background: 'rgba(6,6,6,0.9)', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 4px 20px rgba(0,0,0,0.6)' }}
       >
         <ChevronLeft size={20} className="text-white" />
@@ -75,7 +76,7 @@ export function HorizontalRow({ title, items, seeAllHref, variant = 'default' }:
         aria-label="Scroll right"
         className={`absolute right-4 md:right-14 top-[55%] -translate-y-1/2 z-30 w-10 h-10
           flex items-center justify-center rounded-full transition-[opacity,transform] duration-200
-          ${canScrollRight ? 'opacity-0 group-hover/row:opacity-100 hover:scale-110 active:scale-95' : 'opacity-0 pointer-events-none'}`}
+          ${canScrollRight ? (hasInteracted ? 'opacity-100' : 'opacity-0') + ' md:opacity-0 md:group-hover/row:opacity-100 hover:scale-110 active:scale-95' : 'opacity-0 pointer-events-none'}`}
         style={{ background: 'rgba(6,6,6,0.9)', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 4px 20px rgba(0,0,0,0.6)' }}
       >
         <ChevronRight size={20} className="text-white" />
@@ -96,14 +97,16 @@ export function HorizontalRow({ title, items, seeAllHref, variant = 'default' }:
       <div
         ref={scrollRef}
         onScroll={checkScroll}
-        className="flex gap-4 overflow-x-auto overflow-y-hidden no-scrollbar"
+        onTouchStart={() => setHasInteracted(true)}
+        className="flex gap-4 overflow-x-auto overflow-y-hidden no-scrollbar scroll-smooth"
         style={{
           paddingLeft: 'max(1rem, calc((100vw - 1800px) / 2 + 3.5rem))',
           paddingRight: 'max(1rem, calc((100vw - 1800px) / 2 + 3.5rem))',
           paddingTop: '8px',
           paddingBottom: '24px',
           overscrollBehavior: 'contain',
-          touchAction: 'pan-x',
+          touchAction: 'pan-y',
+          willChange: 'transform',
         }}
       >
         {items.map((item, idx) => (

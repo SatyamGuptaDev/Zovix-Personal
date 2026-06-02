@@ -38,12 +38,17 @@ export function HeroSlider({ items }: { items: Media[] }) {
   }, [paused, goNext]);
 
   // Touch swipe support
-  const [touchStart, setTouchStart] = useState(0);
-  const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.targetTouches[0].clientX);
+  const [touchStart, setTouchStart] = useState({ x: 0, y: 0 });
+  const handleTouchStart = (e: React.TouchEvent) => setTouchStart({ x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY });
   const handleTouchEnd = (e: React.TouchEvent) => {
-    const diff = touchStart - e.changedTouches[0].clientX;
-    if (diff > 50) goNext();
-    if (diff < -50) goPrev();
+    const diffX = touchStart.x - e.changedTouches[0].clientX;
+    const diffY = touchStart.y - e.changedTouches[0].clientY;
+    
+    // Only trigger slide if the swipe was mostly horizontal
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+      if (diffX > 0) goNext();
+      else goPrev();
+    }
   };
 
   if (!items.length) return null;
@@ -64,8 +69,8 @@ export function HeroSlider({ items }: { items: Media[] }) {
 
   return (
     <div
-      className="relative w-full bg-black overflow-hidden"
-      style={{ height: 'clamp(550px, 95vh, 1080px)', contain: 'layout' }}
+      className="relative w-full bg-black overflow-hidden h-[85vh] md:h-[95vh] min-h-[450px] md:min-h-[550px] max-h-[1080px]"
+      style={{ contain: 'layout' }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       onMouseEnter={() => setPaused(true)}
@@ -96,9 +101,9 @@ export function HeroSlider({ items }: { items: Media[] }) {
             className="absolute inset-0"
             style={{
               background: `
-                linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.45) 40%, rgba(0,0,0,0.05) 70%, transparent 100%),
-                linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 20%, rgba(0,0,0,0.1) 50%, transparent 80%),
-                linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 15%)
+                linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 40%, transparent 70%),
+                linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 5%, rgba(0,0,0,0.2) 30%, transparent 60%),
+                linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, transparent 15%)
               `,
             }}
           />
@@ -142,8 +147,31 @@ export function HeroSlider({ items }: { items: Media[] }) {
             transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="mb-6 max-w-2xl"
           >
+            {/* Title / Logo */}
+            {current.logo_path ? (
+              <div className="relative h-[140px] sm:h-[180px] max-w-[75vw] sm:max-w-[480px] mb-3 drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
+                <Image
+                  src={getImageUrl(current.logo_path, 'original')}
+                  alt={title}
+                  fill
+                  sizes="(max-width: 640px) 75vw, 480px"
+                  className="object-contain object-left-bottom"
+                />
+              </div>
+            ) : (
+              <h1
+                className="font-display font-black text-white leading-[0.9] mb-3 tracking-tight"
+                style={{
+                  fontSize: 'clamp(2rem, 8vw, 6rem)',
+                  textShadow: '0 4px 40px rgba(0,0,0,0.9)',
+                }}
+              >
+                {title}
+              </h1>
+            )}
+
             {/* Genre + Year + Rating Row - Pill Badges */}
-            <div className="flex items-center gap-3 mb-4 flex-wrap">
+            <div className="flex items-center gap-3 mb-5 flex-wrap">
               {rating && (
                 <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md shadow-lg">
                   <Star size={12} className="text-yellow-500 fill-yellow-500" />
@@ -155,6 +183,13 @@ export function HeroSlider({ items }: { items: Media[] }) {
                   <span className="text-white/80 text-xs font-medium tracking-wide">🗓 {year}</span>
                 </div>
               )}
+              {(current as any).number_of_seasons && (
+                <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md shadow-lg">
+                  <span className="text-white/80 text-xs font-medium tracking-wide">
+                    {(current as any).number_of_seasons} Season{(current as any).number_of_seasons > 1 ? 's' : ''}
+                  </span>
+                </div>
+              )}
               {genres.length > 0 && (
                 <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md shadow-lg">
                   <span className="text-white/80 text-xs font-medium tracking-wide">
@@ -163,29 +198,6 @@ export function HeroSlider({ items }: { items: Media[] }) {
                 </div>
               )}
             </div>
-
-            {/* Title / Logo */}
-            {current.logo_path ? (
-              <div className="relative h-[140px] sm:h-[180px] max-w-[75vw] sm:max-w-[480px] mb-5 drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
-                <Image
-                  src={getImageUrl(current.logo_path, 'original')}
-                  alt={title}
-                  fill
-                  sizes="(max-width: 640px) 75vw, 480px"
-                  className="object-contain object-left-bottom"
-                />
-              </div>
-            ) : (
-              <h1
-                className="font-display font-black text-white leading-[0.9] mb-5 tracking-tight"
-                style={{
-                  fontSize: 'clamp(2.5rem, 8vw, 6rem)',
-                  textShadow: '0 4px 40px rgba(0,0,0,0.9)',
-                }}
-              >
-                {title}
-              </h1>
-            )}
 
             {/* Overview text */}
             <p className="text-white/65 text-sm md:text-base leading-relaxed line-clamp-2 max-w-lg mb-5">
@@ -235,10 +247,7 @@ export function HeroSlider({ items }: { items: Media[] }) {
         </AnimatePresence>
 
         {/* ── BOTTOM INFO BAR ── */}
-        <div
-          className="flex items-center justify-between py-3 mb-0 border-t"
-          style={{ borderColor: 'rgba(255,255,255,0.08)' }}
-        >
+        <div className="flex items-center justify-between py-3 mb-0">
           {/* Dot indicators */}
           <div className="flex items-center gap-2">
             {visibleItems.map((_, idx) => (

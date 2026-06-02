@@ -97,7 +97,7 @@ export function Top10Row({ title, items }: Top10RowProps) {
       <div
         ref={scrollRef}
         onScroll={checkScroll}
-        className="flex gap-2 overflow-x-auto overflow-y-hidden no-scrollbar"
+        className="flex gap-2 overflow-x-auto overflow-y-hidden no-scrollbar scroll-smooth"
         style={{
           paddingLeft: 'max(1.5rem, calc((100vw - 1800px) / 2 + 3.5rem))',
           paddingRight: 'max(1.5rem, calc((100vw - 1800px) / 2 + 3.5rem))',

@@ -1,12 +1,15 @@
+'use client';
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Media } from "@/types/tmdb";
 import { getImageUrl } from "@/lib/tmdb";
 import { cn } from "@/lib/utils";
-import { Bookmark, Trash2, Heart, Play, Star } from "lucide-react";
+import { Bookmark, Trash2, Heart, Play, Star, Plus, Check, ArrowRight } from "lucide-react";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { useFavorites } from "@/hooks/useFavorites";
 import { usePreferences } from "@/hooks/usePreferences";
+import { useRouter } from "next/navigation";
 
 export function MediaCard({
   media,
@@ -19,6 +22,8 @@ export function MediaCard({
   onRemove?: (id: string, type: 'history' | 'watchlist' | 'favorites') => void;
   variant?: 'default' | 'top10';
 }) {
+  const router = useRouter();
+  const [isMobileExpanded, setIsMobileExpanded] = useState(false);
   const { isInWatchlist, toggleWatchlist } = useWatchlist();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { preferences } = usePreferences();
@@ -35,29 +40,33 @@ export function MediaCard({
 
   const handleWatchlist = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     toggleWatchlist({ id: media.id.toString(), type: type as any, title: title || '', poster: media.poster_path });
   };
 
   const handleFavorite = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     toggleFavorite({ id: media.id.toString(), type: type as any, title: title || '', poster: media.poster_path });
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (window.innerWidth < 768) {
+      if (!isMobileExpanded) {
+        e.preventDefault();
+        setIsMobileExpanded(true);
+      }
+    }
+  };
+
   return (
-    <div className="relative group block">
-      <Link href={href} className={cn("relative block", className)}>
-        {/*
-          Card container:
-          - overflow-hidden clips the poster scale
-          - NO hover:scale here — scaling the outer container causes all children
-            to recomposite and breaks overflow clipping during scroll
-          - will-change: transform promotes to a GPU layer ahead of time
-        */}
+    <div className="relative group block" onMouseLeave={() => setIsMobileExpanded(false)}>
+      <Link href={href} className={cn("relative block", className)} onClick={handleCardClick}>
         <div
           className="relative aspect-[2/3] rounded-xl overflow-hidden cursor-pointer will-change-transform"
           style={{ background: '#111111' }}
         >
-          {/* Poster — scale on hover only (transform = compositor-only, no repaint) */}
+          {/* Poster */}
           <Image
             src={getImageUrl(media.poster_path, "w500")}
             alt={title || "Poster"}
@@ -72,13 +81,9 @@ export function MediaCard({
             referrerPolicy="no-referrer"
           />
 
-          {/*
-            Dark overlay that fades in on hover.
-            Uses opacity transition (compositor-only) instead of brightness filter.
-            CSS filter: brightness() forces rasterisation and breaks compositing.
-          */}
+          {/* Desktop Hover Overlay */}
           <div
-            className="absolute inset-0 transition-opacity duration-300 opacity-0 group-hover:opacity-100"
+            className="absolute inset-0 transition-opacity duration-300 opacity-0 group-hover:opacity-100 hidden md:block"
             style={{
               background: variant === 'top10'
                 ? 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)'
@@ -86,55 +91,71 @@ export function MediaCard({
             }}
           />
 
-          {/* Play button — translate-based animation, compositor-only */}
-          <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-250">
-            <div
-              className="translate-y-3 group-hover:translate-y-0 transition-transform duration-250"
-            >
-              <div
-                className="w-11 h-11 rounded-full flex items-center justify-center"
-                style={{
-                  background: 'rgba(229,9,20,0.9)',
-                  boxShadow: '0 0 18px rgba(229,9,20,0.5)',
-                }}
-              >
-                <Play size={18} className="fill-white text-white ml-0.5" />
+          {/* Desktop Play Button */}
+          <div className="absolute inset-0 z-20 hidden md:flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-250">
+            <div className="translate-y-3 group-hover:translate-y-0 transition-transform duration-250">
+              <div className="w-12 h-12 bg-black/60 rounded-full border border-white/10 flex items-center justify-center backdrop-blur-md">
+                <Play size={20} className="text-white fill-white ml-1" />
               </div>
             </div>
           </div>
 
-          {/*
-            Quick action buttons — slide in from the right.
-            - No backdrop-filter: it samples pixels behind the element on every frame
-              during scroll. With 20+ cards per row, this destroys scroll performance.
-            - Solid dark background achieves the same visual result at zero GPU cost.
-            - transition-[opacity,transform] only, never transition-all.
-          */}
-          <div className="absolute top-2 right-2 z-30 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-[opacity,transform] duration-200">
+          {/* Desktop Quick Actions */}
+          <div className="absolute top-2 right-2 z-30 flex-col gap-1.5 opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-[opacity,transform] duration-200 hidden md:flex">
             <button
               onClick={handleWatchlist}
-              className="w-7 h-7 rounded-full flex items-center justify-center transition-[background-color,border-color] duration-150 active:scale-90"
+              className="w-7 h-7 rounded-full flex items-center justify-center transition-[background-color,border-color] duration-150 active:scale-90 shadow-lg"
               style={{
                 background: onWatchlist ? '#e50914' : 'rgba(0,0,0,0.82)',
                 border: `1px solid ${onWatchlist ? '#e50914' : 'rgba(255,255,255,0.2)'}`,
-                // No backdropFilter — see comment above
               }}
               title={onWatchlist ? "Remove from Watchlist" : "Add to Watchlist"}
             >
               <Bookmark size={12} className={`text-white ${onWatchlist ? 'fill-white' : ''}`} />
             </button>
-            <button
-              onClick={handleFavorite}
-              className="w-7 h-7 rounded-full flex items-center justify-center transition-[background-color,border-color] duration-150 active:scale-90"
-              style={{
-                background: onFavorites ? '#ec4899' : 'rgba(0,0,0,0.82)',
-                border: `1px solid ${onFavorites ? '#ec4899' : 'rgba(255,255,255,0.2)'}`,
-                // No backdropFilter
-              }}
-              title={onFavorites ? "Remove from Favorites" : "Add to Favorites"}
-            >
-              <Heart size={12} className={`text-white ${onFavorites ? 'fill-white' : ''}`} />
-            </button>
+            {(media.contextType === 'history' || media.contextType === 'favorites') && (
+              <button
+                onClick={handleFavorite}
+                className="w-7 h-7 rounded-full flex items-center justify-center transition-[background-color,border-color] duration-150 active:scale-90 shadow-lg"
+                style={{
+                  background: onFavorites ? '#ec4899' : 'rgba(0,0,0,0.82)',
+                  border: `1px solid ${onFavorites ? '#ec4899' : 'rgba(255,255,255,0.2)'}`,
+                }}
+                title={onFavorites ? "Remove from Favorites" : "Add to Favorites"}
+              >
+                <Heart size={12} className={`text-white ${onFavorites ? 'fill-white' : ''}`} />
+              </button>
+            )}
+          </div>
+
+          {/* MOBILE EXPANDED OVERLAY */}
+          <div 
+            className={`absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-black/30 transition-opacity duration-300 md:hidden z-50 flex flex-col justify-between ${
+              isMobileExpanded ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            }`}
+          >
+             <div className="flex justify-end p-2 gap-1.5">
+                <button 
+                  className="w-8 h-8 bg-black/50 border border-white/20 rounded-full flex items-center justify-center backdrop-blur-sm active:scale-90 transition-transform" 
+                  onClick={handleWatchlist}
+                >
+                   {onWatchlist ? <Check size={14} className="text-white"/> : <Plus size={14} className="text-white" />}
+                </button>
+                {(media.contextType === 'history' || media.contextType === 'favorites') && (
+                  <button
+                    onClick={handleFavorite}
+                    className="w-8 h-8 bg-black/50 border border-white/20 rounded-full flex items-center justify-center backdrop-blur-sm active:scale-90 transition-transform"
+                  >
+                    <Heart size={14} className={`text-white ${onFavorites ? 'fill-white' : ''}`} />
+                  </button>
+                )}
+             </div>
+             
+             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                 <div className="w-12 h-12 bg-black/60 rounded-full border border-white/10 flex items-center justify-center backdrop-blur-md">
+                     <Play size={20} className="text-white fill-white ml-1" />
+                 </div>
+             </div>
           </div>
 
           {/* Progress bar */}
@@ -157,32 +178,13 @@ export function MediaCard({
       {onRemove && media.contextType === 'history' && (
         <button
           onClick={(e) => { e.preventDefault(); onRemove(media.id.toString(), media.contextType!); }}
-          className="absolute -top-2 -right-2 z-40 w-6 h-6 bg-void-900 hover:bg-crimson-500 border border-white/10 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-[opacity,background-color] duration-200 hover:scale-110 shadow-xl"
+          className="absolute -top-2 -right-2 z-40 w-6 h-6 bg-void-900 hover:bg-crimson-500 border border-white/10 text-white rounded-full flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-[opacity,background-color] duration-200 hover:scale-110 shadow-xl"
           title="Remove from History"
         >
           <Trash2 size={11} />
         </button>
       )}
 
-      {/* Title & metadata */}
-      <div className="mt-3 px-1">
-        <p className="text-[13px] md:text-[14px] font-bold text-white/90 group-hover:text-white transition-colors duration-200 line-clamp-1 leading-tight tracking-tight">
-          {title}
-        </p>
-        <div className="flex items-center gap-2 mt-1">
-          {preferences.showRatings && media.vote_average ? (
-            <span className="text-yellow-500 text-[11px] font-black tracking-wider flex items-center gap-0.5">
-              <Star size={10} className="fill-yellow-500" /> {media.vote_average.toFixed(1)}
-            </span>
-          ) : null}
-          {year && (
-            <>
-              {preferences.showRatings && media.vote_average ? <span className="text-white/20 text-[10px]">•</span> : null}
-              <span className="text-white/40 text-[11px] font-medium">{year}</span>
-            </>
-          )}
-        </div>
-      </div>
     </div>
   );
 }

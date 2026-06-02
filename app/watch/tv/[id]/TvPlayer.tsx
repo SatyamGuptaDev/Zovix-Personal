@@ -120,23 +120,25 @@ function TvPlayerContent({ show }: { show: MediaDetails }) {
 
   return (
     <div className="flex flex-col gap-12 w-full max-w-7xl mx-auto px-4 py-8">
-      <button 
-        onClick={() => router.back()} 
-        className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors w-fit group font-bold tracking-wider uppercase text-xs"
-      >
-        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-        Back
-      </button>
+      <div className="flex flex-col gap-8">
+        <button 
+          onClick={() => isPlaying ? setIsPlaying(false) : router.back()} 
+          className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors w-fit group font-bold tracking-wider uppercase text-xs"
+        >
+          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+          Back
+        </button>
+      </div>
       <div className={`flex gap-8 transition-all duration-500 ${isPlaying ? 'flex-col items-center justify-center' : 'flex-col xl:flex-row'}`}>
         <div className={`flex flex-col gap-6 w-full ${isPlaying ? 'xl:w-full' : 'flex-1'}`}>
-          <div className="relative w-full">
+          <div className="relative w-full max-w-5xl mx-auto">
             {/* Ambient Backlight */}
             <div 
               className="absolute inset-[-5%] blur-[80px] opacity-100 transition-colors duration-1000 ease-in-out pointer-events-none" 
               style={{ backgroundColor: bgColor }} 
             />
             
-            <div className="relative w-full rounded-2xl overflow-hidden border border-zinc-800 bg-void-950 group aspect-video md:aspect-[2.39/1] max-h-[520px]">
+            <div className={`relative w-full rounded-2xl overflow-hidden border border-zinc-800 bg-void-950 group ${!isPlaying ? 'aspect-video md:aspect-[2.39/1] max-h-[520px]' : 'min-h-[300px] flex flex-col'}`}>
             {!isPlaying ? (
               <div className="absolute inset-0 z-10">
                 <YoutubeBackgroundPlayer 
