@@ -8,16 +8,28 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 const space = Space_Grotesk({ subsets: ['latin'], variable: '--font-display' });
 const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
-export const metadata = {
-  title: 'ZIVOX — Premium Streaming',
-  description: 'Cinematic streaming experience. Watch movies, TV shows, and anime in stunning quality on ZIVOX.',
-  keywords: 'stream movies, watch tv shows, anime, free streaming, zivox',
+export const metadata = {export const Dashboard",
+  description:
+    "Zovix Personal is a productivity dashboard for managing notes, tasks, bookmarks, reminders, and personal workflows.",
+  keywords: [
+    "productivity dashboard",
+    "notes",
+    "tasks",
+    "bookmarks",
+    "reminders",
+    "personal workspace",
+    "workflow management",
+  ],
   openGraph: {
-    title: 'ZIVOX — Premium Streaming',
-    description: 'Cinematic streaming experience. Watch movies, TV shows, and anime in stunning quality on ZIVOX.',
-    type: 'website',
+    title: "Zovix Personal - Productivity Dashboard",
+    description:
+      "Manage notes, tasks, bookmarks, reminders, and daily workflows in one personal workspace.",
+    url: "https://zovix-personal.vercel.app",
+    siteName: "Zovix Personal",
+    type: "website",
   },
 };
+
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
